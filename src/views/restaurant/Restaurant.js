@@ -19,7 +19,7 @@ import MainChartExample from '../charts/MainChartExample.js'
 const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
-const Dashboard = () => {
+const Restaurant = () => {
   return (
     <>
       {/* <WidgetsDropdown /> */}
@@ -554,4 +554,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Restaurant

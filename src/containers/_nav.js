@@ -18,6 +18,20 @@ const _nav =  [
   },
   {
     _tag: 'CSidebarNavItem',
+    name: 'Restaurant',
+    to: '/restaurant',
+    icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon"/>,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    }
+  },
+  {
+    _tag: 'CSidebarNavTitle',
+    _children: ['Theme']
+  },
+  {
+    _tag: 'CSidebarNavItem',
     name: 'Colors',
     to: '/theme/colors',
     icon: 'cil-drop',
