@@ -17,10 +17,12 @@ import CIcon from '@coreui/icons-react'
 
 import MainChartExample from '../charts/MainChartExample.js'
 import usersData from '../users/UsersData'
+import mongoData from '../users/MongoData'
 // import { DocsLink } from 'src/reusable'
 
 const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
+
 
 const getBadge = status => {
   switch (status) {
@@ -45,7 +47,7 @@ const Dashboard = () => {
             </CCardHeader>
             <CCardBody>
             <CDataTable
-              items={usersData}
+              items={mongoData}
               fields={fields}
               dark
               hover
