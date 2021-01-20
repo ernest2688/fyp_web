@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react'
 
 import MainChartExample from '../charts/MainChartExample.js'
 import usersData from '../users/UsersData'
-import mongoData from '../users/MongoData'
+
 // import { DocsLink } from 'src/reusable'
 import * as Realm from "realm-web";
 
@@ -37,13 +37,15 @@ const getBadge = status => {
     default: return 'primary'
   }
 }
-const fields = ['name', 'registered', 'role', 'status']
+//const fields = ['name', 'registered', 'role', 'status']
+const fields = ['name','district','catagories']
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: []
+      user: [],
+      restaurant_info: []
     };
   }
 
@@ -63,8 +65,29 @@ class Dashboard extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
-    console.log(restaurant_info)
-  }
+    //console.log(restaurant_info)
+    restaurant_info.forEach(obj => {
+        var catagories = '';
+        obj['catagories'].forEach(oobj => {
+            catagories = catagories + oobj + '/'
+      })
+      catagories = catagories.substring(0, catagories.length - 1);
+      obj['catagories'] = catagories
+    });
+
+    //console.log(restaurant_info)
+
+    this.setState({
+      restaurant_info: restaurant_info
+    })
+
+    console.log(this.state.restaurant_info)
+
+
+ 
+}
+
+
 
   render() {
     return (
@@ -73,11 +96,11 @@ class Dashboard extends React.Component {
           <CCol>
             <CCard>
               <CCardHeader>
-                Combined All dark Table
+                Restaurants
             </CCardHeader>
               <CCardBody>
                 <CDataTable
-                  items={mongoData}
+                  items={this.state.restaurant_info}
                   fields={fields}
                   dark
                   hover
@@ -87,14 +110,14 @@ class Dashboard extends React.Component {
                   itemsPerPage={10}
                   pagination
                   scopedSlots={{
-                    'status':
-                      (item) => (
-                        <td>
-                          <CBadge color={getBadge(item.status)}>
-                            {item.status}
-                          </CBadge>
-                        </td>
-                      )
+                    // 'status':
+                    //   (item) => (
+                    //     <td>
+                    //       <CBadge color={getBadge(item.status)}>
+                    //         {item.status}
+                    //       </CBadge>
+                    //     </td>
+                    //   )
                   }}
                 />
               </CCardBody>
@@ -112,3 +135,4 @@ class Dashboard extends React.Component {
 }
 
 export default Dashboard
+
