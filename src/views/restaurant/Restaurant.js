@@ -1,4 +1,5 @@
 import React, { lazy , useState } from 'react'
+import { useParams } from "react-router-dom";
 import {
   CBadge,
   CButton,
@@ -35,6 +36,7 @@ const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Restaurant = () => {
+  const { name } = useParams();
   const [active, setActive] = useState(1)
   const lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.'
   return (
@@ -43,7 +45,7 @@ const Restaurant = () => {
       <CCol xs="12" md="10" className="mb-4">
         <CCard>
           <CCardHeader>
-           <h1>Mamady</h1>
+           <h1>{ name }</h1>
             {/* <DocsLink name="CTabs"/> */}
           </CCardHeader>
           <CCardBody>

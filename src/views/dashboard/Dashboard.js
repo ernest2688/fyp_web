@@ -11,8 +11,20 @@ import {
   CProgress,
   CDataTable,
   CRow,
-  CCallout
+  CCallout,
+  CDropdown,
+  CDropdownDivider,
+  CDropdownHeader,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
 } from '@coreui/react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import CIcon from '@coreui/icons-react'
 
 import MainChartExample from '../charts/MainChartExample.js'
@@ -38,15 +50,53 @@ const getBadge = status => {
   }
 }
 //const fields = ['name', 'registered', 'role', 'status']
-const fields = ['name','district','catagories']
+const fields = ['name','district','catagories',
+{
+  key: 'show_details',
+  label: '',
+  _style: { width: '1%' },
+  sorter: false,
+  filter: false
+}]
+
+const hkIslandList = ['kennedy-town','lan-kwai-fong','wan-chai','tin-hau','sai-wan-ho','pok-fu-lam','deep-water-bay','stanley','western-district','sheung-wan','mid-levels','happy-valley','north-point','shau-kei-wan','cyberport','wong-chuk-hang','shek-tong-tsui','central','the-peak','causeway-bay','quarry-bay','heng-fa-chuen','aberdeen','repulse-bay','sai-ying-pun','soho','admiralty','tai-hang','tai-koo','chai-wan','ap-lei-chau','shek-o']
+const kowloonList = ['sham-shui-po','yau-ma-tei','hung-hom','kowloon-tong','san-po-kong','kowloon-bay','yau-tong','mei-foo','prince-edward','jordan','ho-man-tin','kowloon-city','diamond-hill','ngau-tau-kok','lei-yue-mun','lai-chi-kok','mong-kok','tsim-sha-tsui','to-kwa-wan','lok-fu','tsz-wan-shan','kwun-tong','cheung-sha-wan','tai-kok-tsui','knutsford-terrace','shek-kip-mei','wong-tai-sin','choi-hung','lam-tin']
+const newTerritoriesList = ['ma-on-shan','sheung-shui','kwai-chung','sham-tseng','lau-fau-shan','o-south-coast','tai-wai','tai-po','lo-wu','tsuen-wan','tuen-mun','sai-kung','hang-hau','sha-tin','tai-wo','lok-ma-chau','tsing-yi','yuen-long','tesung-kwan-o','fo-tan','fanling','kwai-fong','ma-wan','tin-shui-wai','po-lam']
+const outIslandList = ['lantau-island','lamma-island','discovery-bay','tai-o','po-toi-island','tung-chung','cheung-chau','chek-lap-kok','peng-chau']
+const hk_list =['Hong Kong Style']
+const chinese_list = ["Sichuan","Taiwan","Guangxi","Village Food","Shanxi (shan)","Huaiyang","Guangdong","Shanghai","Shunde","Northeastern","Fujian","Mongolia","Chiu Chow","Beijing","Yunnan","Shandong","Jiang-Zhe","Shanxi (Jin)","Hakka","Jingchuanhu","Hunan","Xinjiang","Guizhou","Hubei"]
+const cantonese_list = ['Guangdong','Chiu Chow','Hakka','Shunde']
+const taiwan_list=['Taiwnaese']
+const japan_list = ['Japanese']
+const korea_list =  ['Korean']
+const thai_list = ['Thai']
+const asian_list = ['Vietnamese','Philippines','Sri Lanka','Japanese','Indoesian','Burmese','Korean','Singaporean','Indian','Thai','Malaysia','Nepalese']
+const italy_list =['Italian']
+const french_list =  ['French']
+const western_list = ['British','Australian','Russian','Italian','Spanish','Portuguese','Dutch','French','German','Swiss','Austrian','American','Belgian','Irish']
+const midEast_list = ['Lebanon','Jewish','Middle Eastern','Moroccan','Greek','Mediterranean','Egyptian','Turkish','African']
+const latinAmerican_list =['Peruvian','Mexican','Brazilian','Cuba','Argentinian']
+const international_list = ['International']
+
+
+
+
+
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       user: [],
-      restaurant_info: []
+      restaurant_info: [],
+      filtered_info: []
     };
+
+  }
+
+  handleClick(item,index){
+    console.log(item.name);
   }
 
   async componentDidMount() {
@@ -78,13 +128,14 @@ class Dashboard extends React.Component {
     //console.log(restaurant_info)
 
     this.setState({
-      restaurant_info: restaurant_info
+      restaurant_info: restaurant_info,
+      filtered_info : restaurant_info
     })
+    
 
     console.log(this.state.restaurant_info)
 
 
- 
 }
 
 
@@ -97,15 +148,63 @@ class Dashboard extends React.Component {
             <CCard>
               <CCardHeader>
                 Restaurants
+                
+              {/* <CDropdown className="m-1 d-inline-block" style={{float: 'right'}}>
+              <CDropdownToggle color="secondary">
+                Cuisine
+              </CDropdownToggle>
+              <CDropdownMenu
+                placement="bottom"
+                modifiers={[{name: 'flip', enabled: false }]}
+              >
+                <CDropdownItem header>Choose one cusine </CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(hk_list)}>Hong Kong Style</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(chinese_list)}>Chinese</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(cantonese_list)}>Cantonese</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(taiwan_list)}>Taiwnaese</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(japan_list)}>Japanese</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(korea_list)}>Korean</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(thai_list)}>Thai</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(asian_list)}>Asian</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(italy_list)}>Italian</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(french_list)}>French</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(western_list)}>Western</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(midEast_list)}>Middile Eastern</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(latinAmerican_list)}>Latin American</CDropdownItem>
+                <CDropdownItem onClick={() =>this.handleClick(international_list)}>International</CDropdownItem>
+              </CDropdownMenu>
+              </CDropdown> */}
+
+
+              {/* <CDropdown className="m-1 d-inline-block" style={{float: 'right'}}>
+              <CDropdownToggle color="secondary">
+               District
+              </CDropdownToggle>
+              <CDropdownMenu
+                placement="bottom"
+                modifiers={[{name: 'flip', enabled: false }]}
+              >
+                <CDropdownItem header>Hong Kong Island</CDropdownItem>
+                <CDropdownItem disabled>Kowloon</CDropdownItem>
+                <CDropdownItem>New Territories</CDropdownItem>
+                <CDropdownItem>Out Island</CDropdownItem>
+              </CDropdownMenu>
+              </CDropdown> */}
+
+                {/* <button>a</button> */}
             </CCardHeader>
               <CCardBody>
                 <CDataTable
-                  items={this.state.restaurant_info}
+                  items={this.state.filtered_info}
                   fields={fields}
                   dark
                   hover
                   striped
                   bordered
+                  itemsPerPageSelect
+                  itemsPerPage={20}
+                  columnFilter
+                  tableFilter
                   size="sm"
                   itemsPerPage={10}
                   pagination
@@ -118,6 +217,24 @@ class Dashboard extends React.Component {
                     //       </CBadge>
                     //     </td>
                     //   )
+                    'show_details':
+                    (item, index)=>{
+                      
+                      return (
+                        <td className="py-2">
+                          <CButton
+                            color="primary"
+                            variant="outline"
+                            shape="square"
+                            size="sm"
+                            // onClick={() =>this.handleClick(item,index)}
+                          >
+                            <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
+                          </CButton>
+                        </td>
+                        )
+                    }
+
                   }}
                 />
               </CCardBody>
