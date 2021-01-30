@@ -1,4 +1,4 @@
-import React, { lazy , useState } from 'react'
+import React, { lazy , useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import {
   CBadge,
@@ -38,6 +38,20 @@ const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 const Restaurant = () => {
   const { name } = useParams();
   const [active, setActive] = useState(1)
+
+  useEffect(() => {
+    try {
+      // Authenticate the user
+      const newuser = await app.logIn(Realm.Credentials.anonymous());
+      this.setState({
+        user: newuser
+      })
+    } catch (err) {
+      console.error("Failed to log in", err);
+    }
+
+    const restaurant_info = await this.state.user.functions.get_detail_restaurant_info(name);
+  });
   const lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.'
   return (
     <>
