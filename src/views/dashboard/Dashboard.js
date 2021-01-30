@@ -115,8 +115,8 @@ class Dashboard extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
-    //console.log(restaurant_info)
-    restaurant_info.forEach(obj => {
+    console.log(restaurant_info)
+    restaurant_info.info.forEach(obj => {
         var catagories = '';
         obj['catagories'].forEach(oobj => {
             catagories = catagories + oobj + '/'
@@ -128,8 +128,8 @@ class Dashboard extends React.Component {
     //console.log(restaurant_info)
 
     this.setState({
-      restaurant_info: restaurant_info,
-      filtered_info : restaurant_info
+      restaurant_info: restaurant_info.info,
+      filtered_info : restaurant_info.info
     })
     
 

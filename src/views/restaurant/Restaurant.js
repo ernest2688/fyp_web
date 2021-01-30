@@ -31,26 +31,28 @@ import CIcon from '@coreui/icons-react'
 import { DocsLink } from 'src/reusable'
 
 import MainChartExample from '../charts/MainChartExample.js'
-
+import * as Realm from "realm-web";
+const app = new Realm.App({ id: "fyp_api-bhlis" });
+const credentials = Realm.Credentials.anonymous();
 const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Restaurant = () => {
   const { name } = useParams();
   const [active, setActive] = useState(1)
+  let user ;
 
-  useEffect(() => {
+  useEffect(async() => {
     try {
       // Authenticate the user
       const newuser = await app.logIn(Realm.Credentials.anonymous());
-      this.setState({
-        user: newuser
-      })
+      user = newuser;
     } catch (err) {
       console.error("Failed to log in", err);
     }
 
-    const restaurant_info = await this.state.user.functions.get_detail_restaurant_info(name);
+    const restaurant_info = await user.functions.get_detail_restaurant_info(name);
+    
   });
   const lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.'
   return (
