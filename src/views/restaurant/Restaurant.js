@@ -24,7 +24,8 @@ import {
 } from '@coreui/react'
 
 import {
-  CChartPolarArea
+  CChartPolarArea,
+  CChartLine
 } from '@coreui/react-chartjs'
 
 import CIcon from '@coreui/icons-react'
@@ -42,9 +43,14 @@ class Restaurant extends React.Component {
     super(props);
     this.state = {
       user: [],
-      restaurant_info: [],
+      info: [],
+      trending: [],
       filtered_info: [],
-      name :this.props.match.params.name
+      name :this.props.match.params.name,
+      catagories: '',
+      scores: {},
+      daominScores: [],
+      scoreDate: ''
     };
   }
   async componentDidMount() {
@@ -66,11 +72,44 @@ class Restaurant extends React.Component {
     console.log(restaurant_info)
 
     this.setState({
-      restaurant_info: restaurant_info.info,
+      info: restaurant_info.info[0],
+      trending: restaurant_info.trending[0]
     })
-    console.log(this.state.restaurant_info)
+
+    console.log(this.state.info)
+    console.log(this.state.trending)
+
+    this.dataMassage();
 
   }
+  
+  dataMassage = () => {
+    let catagories = '';
+    let cat = this.state.info.catagories;
+    cat.forEach(obj => {
+      catagories = catagories + obj + '/'
+    })
+    catagories = catagories.substring(0, catagories.length - 1);
+
+
+
+    let scores = this.state.trending.Date_and_Scores;
+    scores = scores[scores.length - 1];
+    console.log(scores);
+    console.log(typeof scores.Date);
+    let scoreDate = scores.Date.split('T')[0];
+    let domainScores = [scores.Average_food_score,scores.Average_env_score,scores.Average_service_score,scores.Average_Eng_and_emoji_score,scores.Average_score];
+    console.log(domainScores);
+    this.setState({
+      catagories: catagories,
+      daominScores: domainScores,
+      scores:scores,
+      scoreDate: scoreDate
+    })
+
+
+  }
+
   render() {
     return (
       <>
@@ -78,7 +117,7 @@ class Restaurant extends React.Component {
           <CCol xs="12" md="10" className="mb-4">
             <CCard>
               <CCardHeader>
-                {this.state.name}
+               <h2><strong>{this.state.name}</strong></h2>
                 {/* <DocsLink name="CTabs"/> */}
               </CCardHeader>
               <CCardBody>
@@ -102,18 +141,18 @@ class Restaurant extends React.Component {
                   </CNav>
                   <CTabContent>
                     <CTabPane>
-                      <h4><strong>District:</strong> Causeway Bay</h4>
-                      <h4><strong>Price Range:</strong> $101-200</h4>
-                      <h4><strong>Catagories:</strong> International/All Day Breakfast/Coffee Shop/Upper-floor Cafe</h4>
+                      <h4><strong>District:</strong> {this.state.info.district}</h4>
+                      <h4><strong>Price Range:</strong>{this.state.info.priceRange}</h4>
+                      <h4><strong>Catagories:</strong> {this.state.catagories}</h4>
                     </CTabPane>
                     <CTabPane>
                       <h4><strong>Address:</strong></h4>
-                      <h5>1/F, Perfect Commercial Building, 28 Sharp Street West, Causeway Bay</h5>
+                      <h5>{this.state.info.address}</h5>
                       <h4><strong>Telephone:</strong></h4>
-                      <h4>21640066</h4>
+                      <h4>{this.state.info.tel}</h4>
                     </CTabPane>
                     <CTabPane>
-                      <h4>You can find different funny quotes in this upstairs coffee shop. The names of dishes offered are also very humorous, and the ingredients are very unique. For example the cream of Cream Risotto is changed to soy milk; Pizza is also served with salted egg.</h4>
+                      <h4>{this.state.info.introduction}</h4>
                     </CTabPane>
                   </CTabContent>
                 </CTabs>
@@ -127,41 +166,35 @@ class Restaurant extends React.Component {
           <CCard>
             <CCardHeader>
               <h3><strong>Domain Score</strong></h3>
+              <h5>Up to:  {this.state.scoreDate}</h5>
+              
             </CCardHeader>
             <CCardBody>
               <CChartPolarArea
                 datasets={[
-                  // {
-                  //   label: 'My First dataset',
-                  //   backgroundColor: 'rgba(179,181,198,0.2)',
-                  //   pointBackgroundColor: 'rgba(179,181,198,1)',
-                  //   pointBorderColor: '#fff',
-                  //   pointHoverBackgroundColor: 'rgba(179,181,198,1)',
-                  //   pointHoverBorderColor: 'rgba(179,181,198,1)',
-                  //   data: [65, 59, 90]
-                  // }
                   {
-                    label: 'My Second dataset',
+                    label: 'Domain Score',
                     backgroundColor: [
                       '#FF6384',
                       '#4BC0C0',
                       '#FFCE56',
-                      '#E7E9ED'],
+                      '#E7E9ED',
+                      '#000000'],
                     pointBackgroundColor: 'rgba(255,99,132,1)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: 'rgba(255,99,132,1)',
                     pointHoverBorderColor: 'rgba(255,99,132,1)',
-                    data: [3, 4, 4, 3.75]
+                    data: this.state.daominScores
                   }
                 ]}
                 options={{
-                  aspectRatio: 1.5,
+                  aspectRatio: 3,
                   tooltips: {
                     enabled: true
                   }
                 }}
                 labels={[
-                  'Food', 'Environment', 'Service', 'Total'
+                  'Food', 'Environment', 'Service','Emoji', 'Total'
                 ]}
               />
             </CCardBody>
@@ -172,7 +205,7 @@ class Restaurant extends React.Component {
 
 
 
-        <CCard>
+        {/* <CCard>
           <CCardBody>
             <CRow>
               <CCol sm="5">
@@ -202,7 +235,30 @@ class Restaurant extends React.Component {
             <MainChartExample style={{ height: '300px', marginTop: '40px' }} />
           </CCardBody>
 
-        </CCard>
+        </CCard> */}
+        <CCard>
+          <CCardHeader>
+            Prediction of trend
+          </CCardHeader>
+          <CCardBody>
+            <CChartLine
+              datasets={[
+                {
+                  label: 'Data One',
+                  backgroundColor: 'rgb(228,102,81,0.9)',
+                  data: [30, 39, 10, 50, 30, 70, 35]
+                }
+              ]}
+              options={{
+                aspectRatio: 3,
+                tooltips: {
+                  enabled: true
+                }
+              }}
+              labels={[1,2,3,4,5,6,7]}
+            />
+          </CCardBody>
+      </CCard>
 
 
       </>
