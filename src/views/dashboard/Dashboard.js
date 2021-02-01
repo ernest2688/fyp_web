@@ -18,6 +18,7 @@ import {
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
+  CCollapse
 } from '@coreui/react'
 import {
   BrowserRouter as Router,
@@ -87,10 +88,12 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.toggleDetails = this.toggleDetails.bind(this);
     this.state = {
       user: [],
       restaurant_info: [],
-      filtered_info: []
+      filtered_info: [],
+      details: []
     };
 
   }
@@ -115,29 +118,55 @@ class Dashboard extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
-    //console.log(restaurant_info)
-    restaurant_info.forEach(obj => {
+    console.log(restaurant_info)
+    restaurant_info.info.forEach(obj => {
         var catagories = '';
         obj['catagories'].forEach(oobj => {
             catagories = catagories + oobj + '/'
       })
       catagories = catagories.substring(0, catagories.length - 1);
       obj['catagories'] = catagories
+
     });
+    restaurant_info.info.forEach((e,index)=> {
+      e.Average_Eng_and_emoji_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_Eng_and_emoji_score;
+      e.Average_env_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_env_score;
+      e.Average_food_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_food_score;
+      e.Average_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_score;
+      e.Average_service_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_service_score;
+      e.Date = restaurant_info.latest_week_score[index].Date_and_Scores[0].Date.split('T')[0];
+      e.Post_count = restaurant_info.latest_week_score[index].Date_and_Scores[0].Post_count;
+    })
+
+
+
 
     //console.log(restaurant_info)
 
     this.setState({
-      restaurant_info: restaurant_info,
-      filtered_info : restaurant_info
+      restaurant_info: restaurant_info.info,
+      filtered_info : restaurant_info.info
     })
+
+
     
 
     console.log(this.state.restaurant_info)
 
 
-}
-
+  }
+  toggleDetails(index) {
+    const position = this.state.details.indexOf(index);
+    let newDetails = this.state.details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...this.state.details, index];
+    }
+    this.setState({
+      details: newDetails
+    });
+  }
 
 
   render() {
@@ -197,7 +226,6 @@ class Dashboard extends React.Component {
                 <CDataTable
                   items={this.state.filtered_info}
                   fields={fields}
-                  dark
                   hover
                   striped
                   bordered
@@ -219,23 +247,58 @@ class Dashboard extends React.Component {
                     //   )
                     'show_details':
                     (item, index)=>{
-                      
-                      return (
-                        <td className="py-2">
-                          <CButton
-                            color="primary"
-                            variant="outline"
-                            shape="square"
-                            size="sm"
-                            // onClick={() =>this.handleClick(item,index)}
-                          >
-                            <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
-                          </CButton>
-                        </td>
-                        )
+                    return (
+                      <td className="py-2">
+                        <CButton
+                        color="primary"
+                        variant="outline"
+                        shape="square"
+                        size="sm"
+                        onClick={()=>{this.toggleDetails(index)}}
+                        >
+                         {this.state.details.includes(index) ? 'Hide' : 'Show'}
+                         </CButton>
+                      </td>
+                    )
+                    },
+                    'details':
+                      (item, index)=>{
+                       return (
+                       <CCollapse show={this.state.details.includes(index)}>
+                         <CCardBody>
+                           <h4>Scores:</h4>
+                           <h5>Food: {item.Average_food_score}</h5>
+                           <h5>Environment: {item.Average_env_score}</h5>
+                           <h5>Service: {item.Average_service_score}</h5>
+                           <h5>Emoji Score: {item.Average_Eng_and_emoji_score}</h5>
+                           <h5>Total Score: {item.Average_score}</h5>
+                           <p className="text-muted">Update since: {item.Date}</p>
+                           <CButton size="sm" color="info">
+                              <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
+                           </CButton>
+                         </CCardBody>
+                       </CCollapse>
+                      )
                     }
+                  //   'show_details':
+                  //   (item, index)=>{
+                      
+                  //     return (
+                  //       <td className="py-2">
+                  //         <CButton
+                  //           color="primary"
+                  //           variant="outline"
+                  //           shape="square"
+                  //           size="sm"
+                  //           // onClick={() =>this.handleClick(item,index)}
+                  //         >
+                  //           <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
+                  //         </CButton>
+                  //       </td>
+                  //       )
+                  //   }
 
-                  }}
+                   }}
                 />
               </CCardBody>
             </CCard>
