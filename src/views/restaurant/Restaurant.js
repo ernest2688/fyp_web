@@ -1,42 +1,63 @@
 import React, { lazy, useState, useEffect, useRef } from 'react'
 import { useParams } from "react-router-dom";
 import {
-  CBadge,
-  CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
-  CProgress,
   CRow,
-  CSwitch,
-  CCallout,
-  CCardGroup,
   CNav,
   CNavItem,
   CNavLink,
   CTabContent,
   CTabPane,
   CTabs,
-  CWidgetProgress
+  CTooltip,
+  CLink,
+  CWidgetIcon,
+  CWidgetProgress,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+  CWidgetDropdown,
+  CContainer,
+  CDataTable,
+  CBadge,
+  CCardFooter,
+  CWidgetProgressIcon
 } from '@coreui/react'
-
+import CIcon from '@coreui/icons-react'
 import {
   CChartPolarArea,
-  CChartLine
+  CChartLine,
+  CChartRadar
 } from '@coreui/react-chartjs'
 
-import CIcon from '@coreui/icons-react'
-import { DocsLink } from 'src/reusable'
 
+import usersData from '../users/UsersData'
 import MainChartExample from '../charts/MainChartExample.js'
 import * as Realm from "realm-web";
 const app = new Realm.App({ id: "fyp_api-bhlis" });
 const credentials = Realm.Credentials.anonymous();
 const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
+const hashtags_fields = ['rank', 'hashtag', 'count']
+const getBadge = status => {
+  switch (status) {
+    case 'increase': return 'success'
+    case 'neutral': return 'secondary'
+    case 'decrease': return 'danger'
+    default: return 'primary'
+  }
+}
+const data = [{week:'1 week ago', change: "10%", trend:'increase'},
+              {week:'3 weeks ago', change: "20%", trend:'increase'},
+              {week:'6 weeks ago', change: "30%", trend:'decrease'},
+                {week:'9 weeks ago', change: "0%", trend:'neutral'},
+                {week:'12 weeks ago', change: "70%", trend:'increase'}]
+const trend_change_fields = ['week',"change",'trend']
+
 
 class Restaurant extends React.Component {
   constructor(props) {
@@ -50,7 +71,14 @@ class Restaurant extends React.Component {
       catagories: '',
       scores: {},
       daominScores: [],
-      scoreDate: ''
+      scoreDate: '',
+      trendScores:[],
+      trendDates:[],
+      pop_comments:{},
+      highest_score_comment:{},
+      top_hashtags:[],
+      hashtag_counts:[]
+
     };
   }
   async componentDidMount() {
@@ -69,15 +97,18 @@ class Restaurant extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_detail_restaurant_info(this.state.name);
+    console.log("haha")
     console.log(restaurant_info)
 
     this.setState({
       info: restaurant_info.info[0],
-      trending: restaurant_info.trending[0]
+      trending: restaurant_info.trending[0],
+      pop_comments: restaurant_info.most_common_hashtags[0]
     })
 
     console.log(this.state.info)
     console.log(this.state.trending)
+    console.log(this.state.pop_comments)
 
     this.dataMassage();
 
@@ -100,11 +131,73 @@ class Restaurant extends React.Component {
     let scoreDate = scores.Date.split('T')[0];
     let domainScores = [scores.Average_food_score,scores.Average_env_score,scores.Average_service_score,scores.Average_Eng_and_emoji_score,scores.Average_score];
     console.log(domainScores);
+    
+    
+    let trendScores = [];
+    let trendDates = [];
+    this.state.trending.Date_and_Scores.forEach((e,index)=> {
+      trendScores.push(e.Average_score);
+      trendDates.push(e.Date.split('T')[0]);
+    });
+
+    let numbers = [1,3,6,9,12];
+    let scoreChange = [];
+    numbers.forEach((e)=>{
+      let week = (e == 1) ? '1 week ago' : e + " weeks ago";
+      let percent= ((((trendScores[trendScores.length-1]-trendScores[trendScores.length-1-e])/trendScores[trendScores.length-1-e])*100).toFixed(2));
+      let trend = '';
+      if(percent == 0) trend = 'neutral';
+      else if(percent < 0) trend = 'decrease';
+      else if(percent > 0) trend = 'increase';
+      
+      scoreChange.push({
+        week:week,
+        change:percent + '%',
+        trend:trend
+      })
+
+    });
+    
+   
+
+    console.log(scoreChange)
+    
+   
+    
+
+  
+    let highest_score_comment = this.state.pop_comments.highest_score_comment;
+
+    console.log(trendScores);
+    console.log(trendDates);
+    console.log(highest_score_comment);
+
+    let top_hashtags = this.state.pop_comments.Top_Hashtags;
+    console.log(top_hashtags);
+    
+    let hashtag_counts = [];
+    top_hashtags.forEach((e,index)=>{
+      for (const [key, value] of Object.entries(e)) {
+        hashtag_counts.push({rank:index+1,hashtag:key,count:value});
+      }
+    });
+
+    
+    console.log(hashtag_counts);
+
+
+
+
     this.setState({
       catagories: catagories,
       daominScores: domainScores,
       scores:scores,
-      scoreDate: scoreDate
+      scoreDate: scoreDate,
+      trendScores:trendScores,
+      trendDates:trendDates,
+      highest_score_comment: highest_score_comment,
+      hashtag_counts : hashtag_counts,
+      scoreChange: scoreChange
     })
 
 
@@ -113,152 +206,217 @@ class Restaurant extends React.Component {
   render() {
     return (
       <>
+      
         <CRow>
-          <CCol xs="12" md="10" className="mb-4">
-            <CCard>
-              <CCardHeader>
-               <h2><strong>{this.state.name}</strong></h2>
-                {/* <DocsLink name="CTabs"/> */}
-              </CCardHeader>
-              <CCardBody>
-                <CTabs>
-                  <CNav variant="tabs">
-                    <CNavItem>
-                      <CNavLink>
-                        <h6>Basic Info</h6>
-                      </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                      <CNavLink>
-                        <h6>Contact</h6>
-                      </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                      <CNavLink>
-                        <h6>Introduction</h6>
-                      </CNavLink>
-                    </CNavItem>
-                  </CNav>
-                  <CTabContent>
-                    <CTabPane>
-                      <h4><strong>District:</strong> {this.state.info.district}</h4>
-                      <h4><strong>Price Range:</strong>{this.state.info.priceRange}</h4>
-                      <h4><strong>Catagories:</strong> {this.state.catagories}</h4>
-                    </CTabPane>
-                    <CTabPane>
-                      <h4><strong>Address:</strong></h4>
-                      <h5>{this.state.info.address}</h5>
-                      <h4><strong>Telephone:</strong></h4>
-                      <h4>{this.state.info.tel}</h4>
-                    </CTabPane>
-                    <CTabPane>
-                      <h4>{this.state.info.introduction}</h4>
-                    </CTabPane>
-                  </CTabContent>
-                </CTabs>
-              </CCardBody>
-            </CCard>
-          </CCol>
+        <CCol xs="12" sm="6" lg="8">
+        <CCard>
+          <CCardHeader>
+          <h1><strong>{this.state.name}</strong></h1>
+            {/* <DocsLink name="CTooltip"/> */}
+          </CCardHeader>
+          <CCardBody>
+          <h4><strong>District:</strong> {this.state.info.district}</h4>
+          <h4><strong>Price Range:</strong>{this.state.info.priceRange}</h4>
+          <h4><strong>Catagories:</strong> {this.state.catagories}</h4>
+          <h4><strong>Address:</strong></h4> <h5>{this.state.info.address}</h5>
+          <h4><strong>Telephone:</strong></h4> <h4>{this.state.info.tel}</h4>
+          
+          <hr/>
+          <h4><strong>Introduction:</strong></h4>
+          <h4>{this.state.info.introduction}</h4>
+
+           </CCardBody>
+        </CCard>
+        </CCol>
+
+       
+        
+
+      <CCol xs="12" sm="6" lg="4">  
+        <CCard>
+          <CCardHeader>
+            <h3><strong>Domain Score  <div >{this.state.daominScores[4]}/5</div></strong></h3>
+            <h5>Up to:  {this.state.scoreDate}</h5>
+          </CCardHeader>
+          <CCardBody>
+            <CChartRadar
+              datasets={[
+                {
+                  label: 'domains',
+                  backgroundColor: 'rgba(179,181,198,0.2)',
+                  borderColor: 'rgba(179,181,198,1)',
+                  pointBackgroundColor: 'rgba(179,181,198,1)',
+                  pointBorderColor: '#fff',
+                  pointHoverBackgroundColor: '#fff',
+                  pointHoverBorderColor: 'rgba(179,181,198,1)',
+                  tooltipLabelColor: 'rgba(179,181,198,1)',
+                  data: this.state.daominScores.slice(0, -1)
+                }
+              ]}
+              options={{
+                scale: {
+                  ticks: {
+                      max: 5,
+                      min: 0,
+                      stepSize: 0.5
+                  }
+              },        
+                aspectRatio: 1.5,
+                tooltips: {
+                  enabled: true
+                },
+
+              }}
+              labels={[
+                'Food', 'Environment', 'Service','Emoji'
+              ]}
+            />
+          </CCardBody>
+        </CCard>
+        </CCol>
         </CRow>
 
+        <CRow>
+        <CCol xs="12" sm="6" lg="12">
+        <CCard>
+          <CCardHeader>
+          <h3><strong>Review Summary</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+          <h4>{this.state.pop_comments.Summary}</h4>
+           </CCardBody>
+        </CCard>
+        </CCol>
+        </CRow>
+      
 
-        <CCol xs="12" md="10" className="mb-5">
+        <CRow>
+        <CCol xs="12" lg="6">
           <CCard>
             <CCardHeader>
-              <h3><strong>Domain Score</strong></h3>
-              <h5>Up to:  {this.state.scoreDate}</h5>
-              
+              <h3><strong>Most popular hashtags</strong></h3>
             </CCardHeader>
             <CCardBody>
-              <CChartPolarArea
-                datasets={[
-                  {
-                    label: 'Domain Score',
-                    backgroundColor: [
-                      '#FF6384',
-                      '#4BC0C0',
-                      '#FFCE56',
-                      '#E7E9ED',
-                      '#000000'],
-                    pointBackgroundColor: 'rgba(255,99,132,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: 'rgba(255,99,132,1)',
-                    pointHoverBorderColor: 'rgba(255,99,132,1)',
-                    data: this.state.daominScores
-                  }
-                ]}
-                options={{
-                  aspectRatio: 3,
-                  tooltips: {
-                    enabled: true
-                  }
-                }}
-                labels={[
-                  'Food', 'Environment', 'Service','Emoji', 'Total'
-                ]}
-              />
+            <CDataTable
+              items={this.state.hashtag_counts}
+              fields= {hashtags_fields}
+              itemsPerPage={7}
+              pagination
+            />
             </CCardBody>
           </CCard>
         </CCol>
 
-
-
-
-
-        {/* <CCard>
-          <CCardBody>
-            <CRow>
-              <CCol sm="5">
-                <h4 id="traffic" className="card-title mb-0">Prediction of Performance</h4>
-                <div className="small text-muted">up to reviews on Dec 2020</div>
-              </CCol>
-              <CCol sm="7" className="d-none d-md-block">
-                <CButton color="primary" className="float-right">
-                  <CIcon name="cil-cloud-download" />
-                </CButton>
-                <CButtonGroup className="float-right mr-3">
-                  {
-                    ['Day', 'Month', 'Year'].map(value => (
-                      <CButton
-                        color="outline-secondary"
-                        key={value}
-                        className="mx-0"
-                        active={value === 'Month'}
-                      >
-                        {value}
-                      </CButton>
-                    ))
-                  }
-                </CButtonGroup>
-              </CCol>
-            </CRow>
-            <MainChartExample style={{ height: '300px', marginTop: '40px' }} />
-          </CCardBody>
-
-        </CCard> */}
+        <CCol xs="12"  lg="6">
         <CCard>
           <CCardHeader>
-            Prediction of trend
+          <h3><strong>Highest Score Comment</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+          <h5>{this.state.highest_score_comment.Caption}</h5>
+            <hr/>
+            <div>
+             <p>Food:{this.state.highest_score_comment.Average_caption_food_score}</p>
+             <p>Environment:{this.state.highest_score_comment.Average_caption_env_score}</p>
+             <p>Service:{this.state.highest_score_comment.Average_caption_service_score}</p>
+             <p>Emoji:{this.state.highest_score_comment.Average_caption_env_score}</p>
+             <p>Overall:{this.state.highest_score_comment.Average_caption_score}</p>
+            </div>
+            
+           </CCardBody>
+           <CCardFooter>
+              comment date: {this.state.highest_score_comment.Date}
+           </CCardFooter>
+        </CCard>
+        
+        </CCol>
+        </CRow>
+      
+        <CCard>
+          <CCardHeader>
+            <h3><strong>Trending</strong></h3>
           </CCardHeader>
           <CCardBody>
             <CChartLine
               datasets={[
                 {
-                  label: 'Data One',
-                  backgroundColor: 'rgb(228,102,81,0.9)',
-                  data: [30, 39, 10, 50, 30, 70, 35]
+                  label: 'Average overall Score trending',
+                  fill: false,
+                  lineTension: 0.1,
+                  backgroundColor: 'rgba(75,192,192,0.4)',
+                  borderColor: 'rgba(75,192,192,1)',
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: 'rgba(75,192,192,1)',
+                  pointBackgroundColor: '#fff',
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                  pointHoverBorderColor: 'rgba(220,220,220,1)',
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.state.trendScores
                 }
               ]}
               options={{
+                scales: {
+                  yAxes: [{
+                      ticks: {
+                        max: 5,
+                        min: 2,
+                        stepSize: 0.5
+                      }
+                  }]
+              },        
                 aspectRatio: 3,
                 tooltips: {
                   enabled: true
-                }
+                },
+
               }}
-              labels={[1,2,3,4,5,6,7]}
+              labels={this.state.trendDates}
             />
+            <div style={{margin:'20px'}}></div>
+            
+            <CRow>
+            <CCol xs="12" sm="6" lg="6">
+            <CDataTable
+              items={this.state.scoreChange}
+              fields={trend_change_fields}
+              size="sm"
+              itemsPerPage={5}
+              pagination
+              scopedSlots = {{
+                'trend':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.trend)}>
+                        {item.trend}
+                      </CBadge>
+                    </td>
+                  )
+
+              }}
+            />
+            </CCol>
+            <CCol xs="12" sm="6" lg="6">
+            <CWidgetDropdown
+              header="Increase"
+              text="Prediction performance of next week"
+              color="gradient-success"
+              footerSlot={
+                <div style={{margin:'20px'}}></div>
+              }
+            >
+            </CWidgetDropdown>
+            </CCol>
+            </CRow>
           </CCardBody>
       </CCard>
+      
 
 
       </>

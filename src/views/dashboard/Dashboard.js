@@ -51,7 +51,7 @@ const getBadge = status => {
   }
 }
 //const fields = ['name', 'registered', 'role', 'status']
-const fields = ['name','district','catagories',
+const fields = ['name','district','catagories','Last week avg score', 'this week avg score','prediction','most common hasgtag','total num of posts',
 {
   key: 'show_details',
   label: '',
