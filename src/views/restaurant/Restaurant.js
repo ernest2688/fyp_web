@@ -182,7 +182,7 @@ class Restaurant extends React.Component {
       }
     });
 
-    
+    hashtag_counts.pop();
     console.log(hashtag_counts);
 
 
@@ -243,13 +243,13 @@ class Restaurant extends React.Component {
               datasets={[
                 {
                   label: 'domains',
-                  backgroundColor: 'rgba(179,181,198,0.2)',
-                  borderColor: 'rgba(179,181,198,1)',
-                  pointBackgroundColor: 'rgba(179,181,198,1)',
+                  backgroundColor: 'rgba(75,192,192,0.1)',
+                  borderColor: 'rgba(75,192,192,0.7)',
+                  pointBackgroundColor: 'rgba(75,192,192,1)',
                   pointBorderColor: '#fff',
                   pointHoverBackgroundColor: '#fff',
-                  pointHoverBorderColor: 'rgba(179,181,198,1)',
-                  tooltipLabelColor: 'rgba(179,181,198,1)',
+                  pointHoverBorderColor: 'rgba(75,192,192,1)',
+                  tooltipLabelColor: 'rgba(75,192,192,1)',
                   data: this.state.daominScores.slice(0, -1)
                 }
               ]}
@@ -294,14 +294,14 @@ class Restaurant extends React.Component {
         <CCol xs="12" lg="6">
           <CCard>
             <CCardHeader>
-              <h3><strong>Most popular hashtags</strong></h3>
+              <h3><strong>Top 10 Hashtags</strong></h3>
             </CCardHeader>
             <CCardBody>
             <CDataTable
               items={this.state.hashtag_counts}
               fields= {hashtags_fields}
               itemsPerPage={7}
-              pagination
+              size="sm"
             />
             </CCardBody>
           </CCard>
