@@ -18,8 +18,11 @@ import {
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
-  CCollapse
+  CCollapse,
+  CJumbotron
 } from '@coreui/react'
+
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -170,13 +173,23 @@ class Dashboard extends React.Component {
 
 
   render() {
+
     return (
       <>
+            
+        <CJumbotron className="border">
+          <h1 className="display-3">Welcome to the new restaurant review system</h1>
+          <h3 className="lead">In here you can have a peek on the performance of each restaurants.</h3>
+          <hr className="my-2" />
+          <h3>Below is the dashboard of the restaurants.</h3>
+        </CJumbotron>
+            
+        
         <CRow>
           <CCol>
             <CCard>
               <CCardHeader>
-                Restaurants
+                <h2>Restaurants</h2>
                 
               {/* <CDropdown className="m-1 d-inline-block" style={{float: 'right'}}>
               <CDropdownToggle color="secondary">
@@ -267,11 +280,13 @@ class Dashboard extends React.Component {
                        <CCollapse show={this.state.details.includes(index)}>
                          <CCardBody>
                            <h4>Scores:</h4>
+                           <div style={{display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-between'}}>
                            <h5>Food: {item.Average_food_score}</h5>
                            <h5>Environment: {item.Average_env_score}</h5>
                            <h5>Service: {item.Average_service_score}</h5>
                            <h5>Emoji Score: {item.Average_Eng_and_emoji_score}</h5>
                            <h5>Total Score: {item.Average_score}</h5>
+                           </div>
                            <p className="text-muted">Update since: {item.Date}</p>
                            <CButton size="sm" color="info">
                               <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>

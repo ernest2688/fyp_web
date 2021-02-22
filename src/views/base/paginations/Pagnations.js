@@ -61,7 +61,6 @@ const Paginations = () => {
             activePage={currentPage}
             pages={10}
             onActivePageChange={setCurrentPage}
-            color= 'rgba(46, 184, 92,0.4)'
           />
           <br></br>
 

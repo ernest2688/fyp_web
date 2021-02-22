@@ -217,7 +217,7 @@ class Restaurant extends React.Component {
           <CCardBody>
           <h4><strong>District:</strong> {this.state.info.district}</h4>
           <h4><strong>Price Range:</strong>{this.state.info.priceRange}</h4>
-          <h4><strong>Catagories:</strong> {this.state.catagories}</h4>
+          <h4><strong>Categories:</strong> {this.state.catagories}</h4>
           <h4><strong>Address:</strong></h4> <h5>{this.state.info.address}</h5>
           <h4><strong>Telephone:</strong></h4> <h4>{this.state.info.tel}</h4>
           
@@ -315,13 +315,14 @@ class Restaurant extends React.Component {
           <CCardBody>
           <h5>{this.state.highest_score_comment.Caption}</h5>
             <hr/>
-            <div>
-             <p>Food:{this.state.highest_score_comment.Average_caption_food_score}</p>
-             <p>Environment:{this.state.highest_score_comment.Average_caption_env_score}</p>
-             <p>Service:{this.state.highest_score_comment.Average_caption_service_score}</p>
-             <p>Emoji:{this.state.highest_score_comment.Average_caption_env_score}</p>
-             <p>Overall:{this.state.highest_score_comment.Average_caption_score}</p>
+            <div style={{display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-between'}}>
+             <h5>Food:{this.state.highest_score_comment.Average_caption_food_score}</h5>
+             <h5>Environment:{this.state.highest_score_comment.Average_caption_env_score}</h5>
+             <h5>Service:{this.state.highest_score_comment.Average_caption_service_score}</h5>
+             <h5>Emoji:{this.state.highest_score_comment.Average_caption_env_score}</h5>
             </div>
+            <div style={{margin:'10px'}}></div>
+            <h5>Overall:{this.state.highest_score_comment.Average_caption_score}</h5>
             
            </CCardBody>
            <CCardFooter>
@@ -334,7 +335,7 @@ class Restaurant extends React.Component {
       
         <CCard>
           <CCardHeader>
-            <h3><strong>Trending</strong></h3>
+            <h3><strong>Average overall Score trending</strong></h3>
           </CCardHeader>
           <CCardBody>
             <CChartLine
@@ -371,7 +372,347 @@ class Restaurant extends React.Component {
                       }
                   }]
               },        
-                aspectRatio: 3,
+                aspectRatio: 7,
+                tooltips: {
+                  enabled: true
+                },
+
+              }}
+              labels={this.state.trendDates}
+            />
+            <div style={{margin:'20px'}}></div>
+            
+            <CRow>
+            <CCol xs="12" sm="6" lg="6">
+            <CDataTable
+              items={this.state.scoreChange}
+              fields={trend_change_fields}
+              size="sm"
+              itemsPerPage={5}
+              pagination
+              scopedSlots = {{
+                'trend':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.trend)}>
+                        {item.trend}
+                      </CBadge>
+                    </td>
+                  )
+
+              }}
+            />
+            </CCol>
+            <CCol xs="12" sm="6" lg="6">
+            <CWidgetDropdown
+              header="Increase"
+              text="Prediction performance of next week"
+              color="gradient-success"
+              footerSlot={
+                <div style={{margin:'20px'}}></div>
+              }
+            >
+            </CWidgetDropdown>
+            </CCol>
+            </CRow>
+          </CCardBody>
+      </CCard>
+
+      <CCard>
+          <CCardHeader>
+            <h3><strong>Average overall Food Score Trending</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+            <CChartLine
+              datasets={[
+                {
+                  label: 'Average overall Food Score Trending',
+                  fill: false,
+                  lineTension: 0.1,
+                  backgroundColor: 'rgba(102,102,255,0.4)',
+                  borderColor: 'rgba(102,102,255,1)',
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: 'rgba(102,102,255,1)',
+                  pointBackgroundColor: '#fff',
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: 'rgba(102,102,255,1)',
+                  pointHoverBorderColor: 'rgba(220,220,220,1)',
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.state.trendScores
+                }
+              ]}
+              options={{
+                scales: {
+                  yAxes: [{
+                      ticks: {
+                        max: 5,
+                        min: 2,
+                        stepSize: 0.5
+                      }
+                  }]
+              },        
+                aspectRatio: 7,
+                tooltips: {
+                  enabled: true
+                },
+
+              }}
+              labels={this.state.trendDates}
+            />
+            <div style={{margin:'20px'}}></div>
+            
+            <CRow>
+            <CCol xs="12" sm="6" lg="6">
+            <CDataTable
+              items={this.state.scoreChange}
+              fields={trend_change_fields}
+              size="sm"
+              itemsPerPage={5}
+              pagination
+              scopedSlots = {{
+                'trend':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.trend)}>
+                        {item.trend}
+                      </CBadge>
+                    </td>
+                  )
+
+              }}
+            />
+            </CCol>
+            <CCol xs="12" sm="6" lg="6">
+            <CWidgetDropdown
+              header="Increase"
+              text="Prediction performance of next week"
+              color="gradient-success"
+              footerSlot={
+                <div style={{margin:'20px'}}></div>
+              }
+            >
+            </CWidgetDropdown>
+            </CCol>
+            </CRow>
+          </CCardBody>
+      </CCard>
+
+      <CCard>
+          <CCardHeader>
+            <h3><strong>Average overall Environemnt Score Trending</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+            <CChartLine
+              datasets={[
+                {
+                  label: 'Average overall Environemnt Score Trending',
+                  fill: false,
+                  lineTension: 0.1,
+                  backgroundColor: 'rgba(102,178,255,0.4)',
+                  borderColor: 'rgba(102,178,255,1)',
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: 'rgba(102,178,255,1)',
+                  pointBackgroundColor: '#fff',
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: 'rgba(102,178,255,1)',
+                  pointHoverBorderColor: 'rgba(220,220,220,1)',
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.state.trendScores
+                }
+              ]}
+              options={{
+                scales: {
+                  yAxes: [{
+                      ticks: {
+                        max: 5,
+                        min: 2,
+                        stepSize: 0.5
+                      }
+                  }]
+              },        
+                aspectRatio: 7,
+                tooltips: {
+                  enabled: true
+                },
+
+              }}
+              labels={this.state.trendDates}
+            />
+            <div style={{margin:'20px'}}></div>
+            
+            <CRow>
+            <CCol xs="12" sm="6" lg="6">
+            <CDataTable
+              items={this.state.scoreChange}
+              fields={trend_change_fields}
+              size="sm"
+              itemsPerPage={5}
+              pagination
+              scopedSlots = {{
+                'trend':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.trend)}>
+                        {item.trend}
+                      </CBadge>
+                    </td>
+                  )
+
+              }}
+            />
+            </CCol>
+            <CCol xs="12" sm="6" lg="6">
+            <CWidgetDropdown
+              header="Increase"
+              text="Prediction performance of next week"
+              color="gradient-success"
+              footerSlot={
+                <div style={{margin:'20px'}}></div>
+              }
+            >
+            </CWidgetDropdown>
+            </CCol>
+            </CRow>
+          </CCardBody>
+      </CCard>
+
+      <CCard>
+          <CCardHeader>
+            <h3><strong>Average overall Service Score Trending</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+            <CChartLine
+              datasets={[
+                {
+                  label: 'Average overall Service Score Trending',
+                  fill: false,
+                  lineTension: 0.1,
+                  backgroundColor: 'rgba(178,102,255,0.4)',
+                  borderColor: 'rgba(178,102,255,1)',
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: 'rgba(178,102,255,1)',
+                  pointBackgroundColor: '#fff',
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: 'rgba(178,102,255,1)',
+                  pointHoverBorderColor: 'rgba(220,220,220,1)',
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.state.trendScores
+                }
+              ]}
+              options={{
+                scales: {
+                  yAxes: [{
+                      ticks: {
+                        max: 5,
+                        min: 2,
+                        stepSize: 0.5
+                      }
+                  }]
+              },        
+                aspectRatio: 7,
+                tooltips: {
+                  enabled: true
+                },
+
+              }}
+              labels={this.state.trendDates}
+            />
+            <div style={{margin:'20px'}}></div>
+            
+            <CRow>
+            <CCol xs="12" sm="6" lg="6">
+            <CDataTable
+              items={this.state.scoreChange}
+              fields={trend_change_fields}
+              size="sm"
+              itemsPerPage={5}
+              pagination
+              scopedSlots = {{
+                'trend':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.trend)}>
+                        {item.trend}
+                      </CBadge>
+                    </td>
+                  )
+
+              }}
+            />
+            </CCol>
+            <CCol xs="12" sm="6" lg="6">
+            <CWidgetDropdown
+              header="Increase"
+              text="Prediction performance of next week"
+              color="gradient-success"
+              footerSlot={
+                <div style={{margin:'20px'}}></div>
+              }
+            >
+            </CWidgetDropdown>
+            </CCol>
+            </CRow>
+          </CCardBody>
+      </CCard>
+
+      <CCard>
+          <CCardHeader>
+            <h3><strong>Average Emoji Count Trending</strong></h3>
+          </CCardHeader>
+          <CCardBody>
+            <CChartLine
+              datasets={[
+                {
+                  label: 'Average Emoji Count Trending',
+                  fill: false,
+                  lineTension: 0.1,
+                  backgroundColor: 'rgba(255,120,255,0.4)',
+                  borderColor: 'rgba(255,120,255,1)',
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: 'rgba(255,120,255,1)',
+                  pointBackgroundColor: '#fff',
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: 'rgba(255,120,255,1)',
+                  pointHoverBorderColor: 'rgba(220,220,220,1)',
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.state.trendScores
+                }
+              ]}
+              options={{
+                scales: {
+                  yAxes: [{
+                      ticks: {
+                        max: 5,
+                        min: 2,
+                        stepSize: 0.5
+                      }
+                  }]
+              },        
+                aspectRatio: 7,
                 tooltips: {
                   enabled: true
                 },
