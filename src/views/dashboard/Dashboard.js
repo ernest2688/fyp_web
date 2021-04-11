@@ -54,7 +54,7 @@ const getBadge = status => {
   }
 }
 //const fields = ['name', 'registered', 'role', 'status']
-const fields = ['name','district','categories','Last_Week_Avg_Score', 'This_Week_Avg_Score','prediction','most common hasgtag','total num of posts',
+const fields = ['name','district','categories','Last_Week_Avg_Score', 'This_Week_Avg_Score','prediction','most_common_hashtag','total_num_of_posts',
 {
   key: 'show_details',
   label: '',
@@ -116,12 +116,58 @@ class Dashboard extends React.Component {
       let nid_tag = e.nid.split('(')[0];
       nid_tag = nid_tag.trim();
 
+      e.total_num_of_posts = e.reviewCount;
+      restaurant_info.most_common_hashtags.forEach( k=>{
+        if (k.OpenRice_Restaurant_name.toString().split('(')[0].trim() === nid_tag) {
+          try{
+            e.most_common_hashtag = Object.keys(k.Top_Hashtags[0])[0] ;
+          }
+          catch{
+            e.most_common_hashtag = "null" ;
+          }
+          return  
+        }
+      })
+      restaurant_info.latest_week_score.forEach( k=>{
+        if (k.Openrice_Restaurant_Name.toString().split('(')[0].trim() === nid_tag) {
+          e.Last_Week_Avg_Score = k.Date_and_Scores[0].Average_score;
+          e.This_Week_Avg_Score = k.Date_and_Scores[1].Average_score;
+
+          e.Average_Eng_and_emoji_score = k.Date_and_Scores[1].Average_Eng_and_emoji_score;
+          e.Average_env_score = k.Date_and_Scores[1].Average_env_score;
+          e.Average_food_score = k.Date_and_Scores[1].Average_food_score;
+          e.Average_score = k.Date_and_Scores[1].Average_score;
+          e.Average_service_score = k.Date_and_Scores[1].Average_service_score;
+          e.Date = k.Date_and_Scores[1].Date.split('T')[0];
+          return
+        }
+      })
+      restaurant_info.prediction.forEach( k=>{
+        if (k.Openrice_Restaurant_Name.toString().split('(')[0].trim() === nid_tag) {
+          if (k.Average_score){
+            e.prediction = "increase";
+          }
+          else if(!k.Average_score){
+            e.prediction = "decrease";
+          }
+          else {
+            e.prediction = "null"
+          }
+          return
+        }
+      })
+    });
+      
+      /*
       let latest_week_score_index = restaurant_info.latest_week_score.findIndex((element, index) => {
         if (element.Openrice_Restaurant_Name.split('(')[0].trim() === nid_tag) {
           return true
         }
       })
       let most_common_hashtags_index = restaurant_info.most_common_hashtags.findIndex((element, index) => {
+        if (element.OpenRice_Restaurant_name == null){
+          console.log('OpenRice_Restaurant_name' + null)
+        }
         if (element.OpenRice_Restaurant_name.split('(')[0].trim() === nid_tag) {
           return true
         }
@@ -138,22 +184,15 @@ class Dashboard extends React.Component {
       e.Average_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_score;
       e.Average_service_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_service_score;
       e.Date = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Date.split('T')[0];
-
     });
-    
-  
+      */
     this.setState({
       restaurant_info: restaurant_info.info,
       filtered_info : restaurant_info.info
     })
-
-
-    
-
     console.log(this.state.filtered_info)
-
-
   }
+
   toggleDetails(index) {
     const position = this.state.details.indexOf(index);
     let newDetails = this.state.details.slice();
