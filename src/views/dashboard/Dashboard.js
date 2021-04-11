@@ -100,7 +100,7 @@ class Dashboard extends React.Component {
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
     console.log(restaurant_info)
-    
+
     restaurant_info.info.forEach(obj => {
         var categories = '';
         obj['categories'].forEach(oobj => {
@@ -110,24 +110,38 @@ class Dashboard extends React.Component {
       obj['categories'] = categories
 
     });
-    restaurant_info.info.forEach((e,index)=> {
-      e.Average_Eng_and_emoji_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_Eng_and_emoji_score;
-      e.Average_env_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_env_score;
-      e.Average_food_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_food_score;
-      e.Average_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_score;
-      e.Average_service_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_service_score;
-      e.Date = restaurant_info.latest_week_score[index].Date_and_Scores[0].Date.split('T')[0];
-      e.Post_count = restaurant_info.latest_week_score[index].Date_and_Scores[0].Post_count;
-      e.Last_Week_Avg_Score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_score;
-      e.This_Week_Avg_Score = restaurant_info.latest_week_score[index].Date_and_Scores[1].Average_score;
-
-    })
 
 
+    restaurant_info.info.forEach(e => {
+      let nid_tag = e.nid.split('(')[0];
+      nid_tag = nid_tag.trim();
 
+      let latest_week_score_index = restaurant_info.latest_week_score.findIndex((element, index) => {
+        if (element.Openrice_Restaurant_Name.split('(')[0].trim() === nid_tag) {
+          return true
+        }
+      })
+      let most_common_hashtags_index = restaurant_info.most_common_hashtags.findIndex((element, index) => {
+        if (element.OpenRice_Restaurant_name.split('(')[0].trim() === nid_tag) {
+          return true
+        }
+      })
+      let prediction_index = restaurant_info.prediction.findIndex((element, index) => {
+        if (element.Openrice_Restaurant_Name.split('(')[0].trim() === nid_tag) {
+          return true
+        }
+      })
 
-    //console.log(restaurant_info)
+      e.Average_Eng_and_emoji_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_Eng_and_emoji_score;
+      e.Average_env_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_env_score;
+      e.Average_food_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_food_score;
+      e.Average_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_score;
+      e.Average_service_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_service_score;
+      e.Date = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Date.split('T')[0];
 
+    });
+    
+  
     this.setState({
       restaurant_info: restaurant_info.info,
       filtered_info : restaurant_info.info
@@ -228,7 +242,7 @@ class Dashboard extends React.Component {
                            </div>
                            <p className="text-muted">Update since: {item.Date}</p>
                            <CButton size="sm" color="info">
-                              <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
+                              <Link to={`/restaurant/${item.nid}`}><strong>Show Details</strong></Link>
                            </CButton>
                          </CCardBody>
                        </CCollapse>

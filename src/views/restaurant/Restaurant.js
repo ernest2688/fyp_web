@@ -52,14 +52,6 @@ const getBadge = status => {
   }
 }
 
-const getHeader = trend => {
-  return trend
-}
-
-const getColor = color =>{
-  return color
-}
-
 const data = [{week:'1 week ago', change: "10%", trend:'increase'},
               {week:'3 weeks ago', change: "20%", trend:'increase'},
               {week:'6 weeks ago', change: "30%", trend:'decrease'},
@@ -89,7 +81,11 @@ class Restaurant extends React.Component {
       hashtag_counts:[],
       scoreChange:{},
       prediction:{},
-      prediction_state:{},
+      prediction_state:{'Average_food_score':['0','0'],
+      'Average_env_score':['0','0'],
+      'Average_service_score':['0','0'],
+      'Average_score':['0','0'],
+      'Average_openrice_Eng_and_emoji_score':['0','0']},
       avgScorepre : []
 
     };
@@ -124,6 +120,7 @@ class Restaurant extends React.Component {
     console.log(this.state.trending)
     console.log(this.state.pop_comments)
     console.log(this.state.prediction)
+    
 
     this.dataMassage();
 
@@ -266,7 +263,7 @@ class Restaurant extends React.Component {
         <CCol xs="12" sm="6" lg="8">
         <CCard>
           <CCardHeader>
-          <h1><strong>{this.state.name}</strong></h1>
+          <h1><strong>{this.state.info.name}</strong></h1>
             {/* <DocsLink name="CTooltip"/> */}
           </CCardHeader>
           <CCardBody>
@@ -460,21 +457,21 @@ class Restaurant extends React.Component {
             />
             </CCol>
             <CCol xs="12" sm="6" lg="6">
-            {/* <CWidgetDropdown
+            <CWidgetDropdown
               header={this.state.prediction_state.Average_score[0]}
-              text="prediction"
+              text="Prediction performance of next week"
               color={this.state.prediction_state.Average_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
             >
-            </CWidgetDropdown> */}
+            </CWidgetDropdown>
             </CCol>
             </CRow>
           </CCardBody>
       </CCard>
 
-      {/* <CCard>
+      <CCard>
           <CCardHeader>
             <h3><strong>Average overall Food Score Trending</strong></h3>
           </CCardHeader>
@@ -546,9 +543,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header={this.state.prediction_state.Average_food_score.header}
+              header={this.state.prediction_state.Average_food_score[0]}
               text="Prediction performance of next week"
-              color={this.state.prediction_state.Average_food_score.color}
+              color={this.state.prediction_state.Average_food_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -631,9 +628,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header={this.state.prediction_state.Average_env_score.header}
+              header={this.state.prediction_state.Average_env_score[0]}
               text="Prediction performance of next week"
-              color={this.state.prediction_state.Average_env_score.color}
+              color={this.state.prediction_state.Average_env_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -716,9 +713,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header={this.state.prediction_state.Average_service_score.header}
+              header={this.state.prediction_state.Average_service_score[0]}
               text="Prediction performance of next week"
-              color={this.state.prediction_state.Average_service_score.color}
+              color={this.state.prediction_state.Average_service_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -801,9 +798,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header={this.state.prediction_state.Average_openrice_Eng_and_emoji_score.header}
+              header={this.state.prediction_state.Average_openrice_Eng_and_emoji_score[0]}
               text="Prediction performance of next week"
-              color="gradient-danger"
+              color={this.state.prediction_state.Average_openrice_Eng_and_emoji_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -812,7 +809,7 @@ class Restaurant extends React.Component {
             </CCol>
             </CRow>
           </CCardBody>
-      </CCard> */}
+      </CCard>
       
 
 
