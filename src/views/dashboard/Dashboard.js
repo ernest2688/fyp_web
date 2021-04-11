@@ -1,23 +1,12 @@
 import React, { lazy } from 'react'
 import {
-  CBadge,
   CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
-  CProgress,
   CDataTable,
   CRow,
-  CCallout,
-  CDropdown,
-  CDropdownDivider,
-  CDropdownHeader,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
   CCollapse,
   CJumbotron
 } from '@coreui/react'
@@ -29,19 +18,11 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import CIcon from '@coreui/icons-react'
 
-import MainChartExample from '../charts/MainChartExample.js'
-import usersData from '../users/UsersData'
 
-// import { DocsLink } from 'src/reusable'
 import * as Realm from "realm-web";
-
-const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
-
 const app = new Realm.App({ id: "fyp_api-bhlis" });
-const credentials = Realm.Credentials.anonymous();
+
 
 
 const getBadge = status => {
@@ -53,7 +34,7 @@ const getBadge = status => {
     default: return 'primary'
   }
 }
-//const fields = ['name', 'registered', 'role', 'status']
+
 const fields = ['name','district','categories','Last_Week_Avg_Score', 'This_Week_Avg_Score','prediction','most_common_hashtag','total_num_of_posts',
 {
   key: 'show_details',
@@ -99,7 +80,7 @@ class Dashboard extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
-    console.log(restaurant_info)
+    //console.log(restaurant_info)
 
     restaurant_info.info.forEach(obj => {
         var categories = '';
@@ -158,39 +139,12 @@ class Dashboard extends React.Component {
       })
     });
       
-      /*
-      let latest_week_score_index = restaurant_info.latest_week_score.findIndex((element, index) => {
-        if (element.Openrice_Restaurant_Name.split('(')[0].trim() === nid_tag) {
-          return true
-        }
-      })
-      let most_common_hashtags_index = restaurant_info.most_common_hashtags.findIndex((element, index) => {
-        if (element.OpenRice_Restaurant_name == null){
-          console.log('OpenRice_Restaurant_name' + null)
-        }
-        if (element.OpenRice_Restaurant_name.split('(')[0].trim() === nid_tag) {
-          return true
-        }
-      })
-      let prediction_index = restaurant_info.prediction.findIndex((element, index) => {
-        if (element.Openrice_Restaurant_Name.split('(')[0].trim() === nid_tag) {
-          return true
-        }
-      })
-
-      e.Average_Eng_and_emoji_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_Eng_and_emoji_score;
-      e.Average_env_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_env_score;
-      e.Average_food_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_food_score;
-      e.Average_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_score;
-      e.Average_service_score = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Average_service_score;
-      e.Date = restaurant_info.latest_week_score[latest_week_score_index].Date_and_Scores[1].Date.split('T')[0];
-    });
-      */
+      
     this.setState({
       restaurant_info: restaurant_info.info,
       filtered_info : restaurant_info.info
     })
-    console.log(this.state.filtered_info)
+    //console.log(this.state.filtered_info)
   }
 
   toggleDetails(index) {
@@ -243,14 +197,6 @@ class Dashboard extends React.Component {
                   itemsPerPage={10}
                   pagination
                   scopedSlots={{
-                    // 'status':
-                    //   (item) => (
-                    //     <td>
-                    //       <CBadge color={getBadge(item.status)}>
-                    //         {item.status}
-                    //       </CBadge>
-                    //     </td>
-                    //   )
                     'show_details':
                     (item, index)=>{
                     return (
@@ -288,23 +234,6 @@ class Dashboard extends React.Component {
                        </CCollapse>
                       )
                     }
-                  //   'show_details':
-                  //   (item, index)=>{
-                      
-                  //     return (
-                  //       <td className="py-2">
-                  //         <CButton
-                  //           color="primary"
-                  //           variant="outline"
-                  //           shape="square"
-                  //           size="sm"
-                  //           // onClick={() =>this.handleClick(item,index)}
-                  //         >
-                  //           <Link to={`/restaurant/${item.name}`}><strong>Show Details</strong></Link>
-                  //         </CButton>
-                  //       </td>
-                  //       )
-                  //   }
 
                    }}
                 />

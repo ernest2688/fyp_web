@@ -1,47 +1,25 @@
 import React, { lazy, useState, useEffect, useRef } from 'react'
-import { useParams } from "react-router-dom";
 import {
   CCard,
   CCardBody,
   CCardHeader,
   CCol,
   CRow,
-  CNav,
-  CNavItem,
-  CNavLink,
-  CTabContent,
-  CTabPane,
-  CTabs,
-  CTooltip,
-  CLink,
-  CWidgetIcon,
-  CWidgetProgress,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
   CWidgetDropdown,
-  CContainer,
   CDataTable,
   CBadge,
-  CCardFooter,
-  CWidgetProgressIcon
+  CCardFooter
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+
 import {
-  CChartPolarArea,
   CChartLine,
   CChartRadar
 } from '@coreui/react-chartjs'
 
 
-import usersData from '../users/UsersData'
-import MainChartExample from '../charts/MainChartExample.js'
+
 import * as Realm from "realm-web";
 const app = new Realm.App({ id: "fyp_api-bhlis" });
-const credentials = Realm.Credentials.anonymous();
-const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 const hashtags_fields = ['rank', 'hashtag', 'count']
 const getBadge = status => {
   switch (status) {
@@ -52,11 +30,6 @@ const getBadge = status => {
   }
 }
 
-const data = [{week:'1 week ago', change: "10%", trend:'increase'},
-              {week:'3 weeks ago', change: "20%", trend:'increase'},
-              {week:'6 weeks ago', change: "30%", trend:'decrease'},
-                {week:'9 weeks ago', change: "0%", trend:'neutral'},
-                {week:'12 weeks ago', change: "70%", trend:'increase'}]
 const trend_change_fields = ['week',"change",'trend']
 
 
@@ -106,8 +79,8 @@ class Restaurant extends React.Component {
 
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_detail_restaurant_info(this.state.name);
-    console.log("haha")
-    console.log(restaurant_info)
+    //console.log("haha")
+    //console.log(restaurant_info)
 
     this.setState({
       info: restaurant_info.info[0],
@@ -116,10 +89,10 @@ class Restaurant extends React.Component {
       prediction: restaurant_info.prediction[0]
     })
 
-    console.log(this.state.info)
-    console.log(this.state.trending)
-    console.log(this.state.pop_comments)
-    console.log(this.state.prediction)
+    // console.log(this.state.info)
+    // console.log(this.state.trending)
+    // console.log(this.state.pop_comments)
+    // console.log(this.state.prediction)
     
 
     this.dataMassage();
@@ -138,11 +111,11 @@ class Restaurant extends React.Component {
 
     let scores = this.state.trending.Date_and_Scores;
     scores = scores[scores.length - 1];
-    console.log(scores);
-    console.log(typeof scores.Date);
+    // console.log(scores);
+    // console.log(typeof scores.Date);
     let scoreDate = scores.Date.split('T')[0];
     let domainScores = [scores.Average_food_score,scores.Average_env_score,scores.Average_service_score,scores.Average_Eng_and_emoji_score,scores.Average_score];
-    console.log(domainScores);
+    //console.log(domainScores);
     
     
     let trendScores = {Average_Eng_and_emoji_score : [], 
@@ -162,7 +135,7 @@ class Restaurant extends React.Component {
       trendDates.push(e.Date.split('T')[0]);
     });
 
-    console.log(trendScores)
+    //console.log(trendScores)
 
     let numbers = [1,3,6,9,12];
     let scoreChange = {Average_Eng_and_emoji_score : [], 
@@ -194,18 +167,18 @@ class Restaurant extends React.Component {
     }
 
   
-    console.log(scoreChange)
+    //console.log(scoreChange)
 
     
    
     let highest_score_comment = this.state.pop_comments.highest_score_comment;
 
-    console.log(trendScores);
-    console.log(trendDates);
-    console.log(highest_score_comment);
+    // console.log(trendScores);
+    // console.log(trendDates);
+    // console.log(highest_score_comment);
 
     let top_hashtags = this.state.pop_comments.Top_Hashtags;
-    console.log(top_hashtags);
+    //console.log(top_hashtags);
     
     let hashtag_counts = [];
     top_hashtags.forEach((e,index)=>{
@@ -215,7 +188,7 @@ class Restaurant extends React.Component {
     });
 
     hashtag_counts.pop();
-    console.log(hashtag_counts);
+    //console.log(hashtag_counts);
 
 
     let prediction_state = {};
@@ -234,7 +207,7 @@ class Restaurant extends React.Component {
     });
 
   
-    console.log(prediction_state);
+    //console.log(prediction_state);
     
 
 
@@ -420,8 +393,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 0,
-                        stepSize: 1
+                        min: 2,
+                        stepSize: 0.5
                       }
                   }]
               },        
@@ -505,8 +478,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 0,
-                        stepSize: 1
+                        min: 2,
+                        stepSize: 0.5
                       }
                   }]
               },        
@@ -590,8 +563,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 0,
-                        stepSize: 1
+                        min: 2,
+                        stepSize: 0.5
                       }
                   }]
               },        
@@ -675,8 +648,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 0,
-                        stepSize: 1
+                        min: 2,
+                        stepSize: 0.5
                       }
                   }]
               },        
@@ -760,8 +733,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 0,
-                        stepSize: 1
+                        min: 2,
+                        stepSize: 0.5
                       }
                   }]
               },        
