@@ -51,6 +51,15 @@ const getBadge = status => {
     default: return 'primary'
   }
 }
+
+const getHeader = trend => {
+  return trend
+}
+
+const getColor = color =>{
+  return color
+}
+
 const data = [{week:'1 week ago', change: "10%", trend:'increase'},
               {week:'3 weeks ago', change: "20%", trend:'increase'},
               {week:'6 weeks ago', change: "30%", trend:'decrease'},
@@ -77,7 +86,11 @@ class Restaurant extends React.Component {
       pop_comments:{},
       highest_score_comment:{},
       top_hashtags:[],
-      hashtag_counts:[]
+      hashtag_counts:[],
+      scoreChange:{},
+      prediction:{},
+      prediction_state:{},
+      avgScorepre : []
 
     };
   }
@@ -103,12 +116,14 @@ class Restaurant extends React.Component {
     this.setState({
       info: restaurant_info.info[0],
       trending: restaurant_info.trending[0],
-      pop_comments: restaurant_info.most_common_hashtags[0]
+      pop_comments: restaurant_info.most_common_hashtags[0],
+      prediction: restaurant_info.prediction[0]
     })
 
     console.log(this.state.info)
     console.log(this.state.trending)
     console.log(this.state.pop_comments)
+    console.log(this.state.prediction)
 
     this.dataMassage();
 
@@ -116,7 +131,7 @@ class Restaurant extends React.Component {
   
   dataMassage = () => {
     let catagories = '';
-    let cat = this.state.info.catagories;
+    let cat = this.state.info.categories;
     cat.forEach(obj => {
       catagories = catagories + obj + '/'
     })
@@ -133,39 +148,59 @@ class Restaurant extends React.Component {
     console.log(domainScores);
     
     
-    let trendScores = [];
+    let trendScores = {Average_Eng_and_emoji_score : [], 
+      Average_env_score : [],
+      Average_food_score : [],
+      Average_score : [],
+      Average_service_score : []
+    };
+
     let trendDates = [];
     this.state.trending.Date_and_Scores.forEach((e,index)=> {
-      trendScores.push(e.Average_score);
+      trendScores.Average_score.push(e.Average_score);
+      trendScores.Average_env_score.push(e.Average_env_score);
+      trendScores.Average_food_score.push(e.Average_food_score);
+      trendScores.Average_Eng_and_emoji_score.push(e.Average_Eng_and_emoji_score);
+      trendScores.Average_service_score.push(e.Average_service_score);
       trendDates.push(e.Date.split('T')[0]);
     });
 
+    console.log(trendScores)
+
     let numbers = [1,3,6,9,12];
-    let scoreChange = [];
-    numbers.forEach((e)=>{
-      let week = (e == 1) ? '1 week ago' : e + " weeks ago";
-      let percent= ((((trendScores[trendScores.length-1]-trendScores[trendScores.length-1-e])/trendScores[trendScores.length-1-e])*100).toFixed(2));
-      let trend = '';
-      if(percent == 0) trend = 'neutral';
-      else if(percent < 0) trend = 'decrease';
-      else if(percent > 0) trend = 'increase';
-      
-      scoreChange.push({
-        week:week,
-        change:percent + '%',
-        trend:trend
-      })
+    let scoreChange = {Average_Eng_and_emoji_score : [], 
+      Average_env_score : [],
+      Average_food_score : [],
+      Average_score : [],
+      Average_service_score : []
+    };
+    
 
-    });
-    
-   
+    let domains = Object.keys(trendScores);
 
-    console.log(scoreChange)
-    
-   
-    
+    for (let i = 0; i < domains.length; ++i){
+      numbers.forEach((e)=>{
+        let week = (e == 1) ? '1 week ago' : e + " weeks ago";
+        let percent= ((((trendScores[`${domains[i]}`][trendScores[`${domains[i]}`].length-1]-trendScores[`${domains[i]}`][trendScores[`${domains[i]}`].length-1-e])/trendScores[`${domains[i]}`][trendScores[`${domains[i]}`].length-1-e])*100).toFixed(2));
+        let trend = '';
+        if(isNaN(percent) || percent == 0) trend = 'neutral';
+        else if(percent < 0) trend = 'decrease';
+        else if(percent > 0) trend = 'increase';
+        
+        scoreChange[`${domains[i]}`].push({
+          week:week,
+          change: (trend == 'neutral') ? '0%' : percent + '%',
+          trend:trend
+        })
+  
+      });
+    }
 
   
+    console.log(scoreChange)
+
+    
+   
     let highest_score_comment = this.state.pop_comments.highest_score_comment;
 
     console.log(trendScores);
@@ -186,6 +221,25 @@ class Restaurant extends React.Component {
     console.log(hashtag_counts);
 
 
+    let prediction_state = {};
+
+    let prediction_keys =["Average_food_score", "Average_env_score", "Average_service_score", "Average_score", "Average_openrice_Eng_and_emoji_score"];
+
+
+    prediction_keys.forEach((e,index)=> {
+      if (this.state.prediction[`${e}`]) {
+        prediction_state[`${e}`] = ['Increase','gradient-success'];
+      }
+      else {
+        prediction_state[`${e}`] = [ "Decrease","gradient-danger"];
+        
+      }
+    });
+
+  
+    console.log(prediction_state);
+    
+
 
 
     this.setState({
@@ -197,10 +251,11 @@ class Restaurant extends React.Component {
       trendDates:trendDates,
       highest_score_comment: highest_score_comment,
       hashtag_counts : hashtag_counts,
-      scoreChange: scoreChange
+      scoreChange: scoreChange,
+      prediction_state : prediction_state
     })
 
-
+  
   }
 
   render() {
@@ -220,6 +275,7 @@ class Restaurant extends React.Component {
           <h4><strong>Categories:</strong> {this.state.catagories}</h4>
           <h4><strong>Address:</strong></h4> <h5>{this.state.info.address}</h5>
           <h4><strong>Telephone:</strong></h4> <h4>{this.state.info.tel}</h4>
+          <a href={this.state.info.url}><strong>Click here to Openrice Link</strong></a>
           
           <hr/>
           <h4><strong>Introduction:</strong></h4>
@@ -359,7 +415,7 @@ class Restaurant extends React.Component {
                   pointHoverBorderWidth: 2,
                   pointRadius: 1,
                   pointHitRadius: 10,
-                  data: this.state.trendScores
+                  data: this.state.trendScores.Average_score
                 }
               ]}
               options={{
@@ -367,8 +423,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 2,
-                        stepSize: 0.5
+                        min: 0,
+                        stepSize: 1
                       }
                   }]
               },        
@@ -385,7 +441,7 @@ class Restaurant extends React.Component {
             <CRow>
             <CCol xs="12" sm="6" lg="6">
             <CDataTable
-              items={this.state.scoreChange}
+              items={this.state.scoreChange.Average_score}
               fields={trend_change_fields}
               size="sm"
               itemsPerPage={5}
@@ -404,21 +460,21 @@ class Restaurant extends React.Component {
             />
             </CCol>
             <CCol xs="12" sm="6" lg="6">
-            <CWidgetDropdown
-              header="Increase"
-              text="Prediction performance of next week"
-              color="gradient-success"
+            {/* <CWidgetDropdown
+              header={this.state.prediction_state.Average_score[0]}
+              text="prediction"
+              color={this.state.prediction_state.Average_score[1]}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
             >
-            </CWidgetDropdown>
+            </CWidgetDropdown> */}
             </CCol>
             </CRow>
           </CCardBody>
       </CCard>
 
-      <CCard>
+      {/* <CCard>
           <CCardHeader>
             <h3><strong>Average overall Food Score Trending</strong></h3>
           </CCardHeader>
@@ -444,7 +500,7 @@ class Restaurant extends React.Component {
                   pointHoverBorderWidth: 2,
                   pointRadius: 1,
                   pointHitRadius: 10,
-                  data: this.state.trendScores
+                  data: this.state.trendScores.Average_food_score
                 }
               ]}
               options={{
@@ -452,8 +508,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 2,
-                        stepSize: 0.5
+                        min: 0,
+                        stepSize: 1
                       }
                   }]
               },        
@@ -470,7 +526,7 @@ class Restaurant extends React.Component {
             <CRow>
             <CCol xs="12" sm="6" lg="6">
             <CDataTable
-              items={this.state.scoreChange}
+              items={this.state.scoreChange.Average_food_score}
               fields={trend_change_fields}
               size="sm"
               itemsPerPage={5}
@@ -490,9 +546,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header="Increase"
+              header={this.state.prediction_state.Average_food_score.header}
               text="Prediction performance of next week"
-              color="gradient-success"
+              color={this.state.prediction_state.Average_food_score.color}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -529,7 +585,7 @@ class Restaurant extends React.Component {
                   pointHoverBorderWidth: 2,
                   pointRadius: 1,
                   pointHitRadius: 10,
-                  data: this.state.trendScores
+                  data: this.state.trendScores.Average_env_score
                 }
               ]}
               options={{
@@ -537,8 +593,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 2,
-                        stepSize: 0.5
+                        min: 0,
+                        stepSize: 1
                       }
                   }]
               },        
@@ -555,7 +611,7 @@ class Restaurant extends React.Component {
             <CRow>
             <CCol xs="12" sm="6" lg="6">
             <CDataTable
-              items={this.state.scoreChange}
+              items={this.state.scoreChange.Average_env_score}
               fields={trend_change_fields}
               size="sm"
               itemsPerPage={5}
@@ -575,9 +631,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header="Increase"
+              header={this.state.prediction_state.Average_env_score.header}
               text="Prediction performance of next week"
-              color="gradient-success"
+              color={this.state.prediction_state.Average_env_score.color}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -614,7 +670,7 @@ class Restaurant extends React.Component {
                   pointHoverBorderWidth: 2,
                   pointRadius: 1,
                   pointHitRadius: 10,
-                  data: this.state.trendScores
+                  data: this.state.trendScores.Average_service_score
                 }
               ]}
               options={{
@@ -622,8 +678,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 2,
-                        stepSize: 0.5
+                        min: 0,
+                        stepSize: 1
                       }
                   }]
               },        
@@ -640,7 +696,7 @@ class Restaurant extends React.Component {
             <CRow>
             <CCol xs="12" sm="6" lg="6">
             <CDataTable
-              items={this.state.scoreChange}
+              items={this.state.scoreChange.Average_service_score}
               fields={trend_change_fields}
               size="sm"
               itemsPerPage={5}
@@ -660,9 +716,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header="Increase"
+              header={this.state.prediction_state.Average_service_score.header}
               text="Prediction performance of next week"
-              color="gradient-success"
+              color={this.state.prediction_state.Average_service_score.color}
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -699,7 +755,7 @@ class Restaurant extends React.Component {
                   pointHoverBorderWidth: 2,
                   pointRadius: 1,
                   pointHitRadius: 10,
-                  data: this.state.trendScores
+                  data: this.state.trendScores.Average_Eng_and_emoji_score
                 }
               ]}
               options={{
@@ -707,8 +763,8 @@ class Restaurant extends React.Component {
                   yAxes: [{
                       ticks: {
                         max: 5,
-                        min: 2,
-                        stepSize: 0.5
+                        min: 0,
+                        stepSize: 1
                       }
                   }]
               },        
@@ -725,7 +781,7 @@ class Restaurant extends React.Component {
             <CRow>
             <CCol xs="12" sm="6" lg="6">
             <CDataTable
-              items={this.state.scoreChange}
+              items={this.state.scoreChange.Average_Eng_and_emoji_score}
               fields={trend_change_fields}
               size="sm"
               itemsPerPage={5}
@@ -745,9 +801,9 @@ class Restaurant extends React.Component {
             </CCol>
             <CCol xs="12" sm="6" lg="6">
             <CWidgetDropdown
-              header="Increase"
+              header={this.state.prediction_state.Average_openrice_Eng_and_emoji_score.header}
               text="Prediction performance of next week"
-              color="gradient-success"
+              color="gradient-danger"
               footerSlot={
                 <div style={{margin:'20px'}}></div>
               }
@@ -756,7 +812,7 @@ class Restaurant extends React.Component {
             </CCol>
             </CRow>
           </CCardBody>
-      </CCard>
+      </CCard> */}
       
 
 

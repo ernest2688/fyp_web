@@ -54,7 +54,7 @@ const getBadge = status => {
   }
 }
 //const fields = ['name', 'registered', 'role', 'status']
-const fields = ['name','district','catagories','Last week avg score', 'this week avg score','prediction','most common hasgtag','total num of posts',
+const fields = ['name','district','categories','Last_Week_Avg_Score', 'This_Week_Avg_Score','prediction','most common hasgtag','total num of posts',
 {
   key: 'show_details',
   label: '',
@@ -62,28 +62,6 @@ const fields = ['name','district','catagories','Last week avg score', 'this week
   sorter: false,
   filter: false
 }]
-
-const hkIslandList = ['kennedy-town','lan-kwai-fong','wan-chai','tin-hau','sai-wan-ho','pok-fu-lam','deep-water-bay','stanley','western-district','sheung-wan','mid-levels','happy-valley','north-point','shau-kei-wan','cyberport','wong-chuk-hang','shek-tong-tsui','central','the-peak','causeway-bay','quarry-bay','heng-fa-chuen','aberdeen','repulse-bay','sai-ying-pun','soho','admiralty','tai-hang','tai-koo','chai-wan','ap-lei-chau','shek-o']
-const kowloonList = ['sham-shui-po','yau-ma-tei','hung-hom','kowloon-tong','san-po-kong','kowloon-bay','yau-tong','mei-foo','prince-edward','jordan','ho-man-tin','kowloon-city','diamond-hill','ngau-tau-kok','lei-yue-mun','lai-chi-kok','mong-kok','tsim-sha-tsui','to-kwa-wan','lok-fu','tsz-wan-shan','kwun-tong','cheung-sha-wan','tai-kok-tsui','knutsford-terrace','shek-kip-mei','wong-tai-sin','choi-hung','lam-tin']
-const newTerritoriesList = ['ma-on-shan','sheung-shui','kwai-chung','sham-tseng','lau-fau-shan','o-south-coast','tai-wai','tai-po','lo-wu','tsuen-wan','tuen-mun','sai-kung','hang-hau','sha-tin','tai-wo','lok-ma-chau','tsing-yi','yuen-long','tesung-kwan-o','fo-tan','fanling','kwai-fong','ma-wan','tin-shui-wai','po-lam']
-const outIslandList = ['lantau-island','lamma-island','discovery-bay','tai-o','po-toi-island','tung-chung','cheung-chau','chek-lap-kok','peng-chau']
-const hk_list =['Hong Kong Style']
-const chinese_list = ["Sichuan","Taiwan","Guangxi","Village Food","Shanxi (shan)","Huaiyang","Guangdong","Shanghai","Shunde","Northeastern","Fujian","Mongolia","Chiu Chow","Beijing","Yunnan","Shandong","Jiang-Zhe","Shanxi (Jin)","Hakka","Jingchuanhu","Hunan","Xinjiang","Guizhou","Hubei"]
-const cantonese_list = ['Guangdong','Chiu Chow','Hakka','Shunde']
-const taiwan_list=['Taiwnaese']
-const japan_list = ['Japanese']
-const korea_list =  ['Korean']
-const thai_list = ['Thai']
-const asian_list = ['Vietnamese','Philippines','Sri Lanka','Japanese','Indoesian','Burmese','Korean','Singaporean','Indian','Thai','Malaysia','Nepalese']
-const italy_list =['Italian']
-const french_list =  ['French']
-const western_list = ['British','Australian','Russian','Italian','Spanish','Portuguese','Dutch','French','German','Swiss','Austrian','American','Belgian','Irish']
-const midEast_list = ['Lebanon','Jewish','Middle Eastern','Moroccan','Greek','Mediterranean','Egyptian','Turkish','African']
-const latinAmerican_list =['Peruvian','Mexican','Brazilian','Cuba','Argentinian']
-const international_list = ['International']
-
-
-
 
 
 
@@ -122,13 +100,14 @@ class Dashboard extends React.Component {
   get_restaurant_info = async () => {
     const restaurant_info = await this.state.user.functions.get_restaurant_info_for_dashboard();
     console.log(restaurant_info)
+    
     restaurant_info.info.forEach(obj => {
-        var catagories = '';
-        obj['catagories'].forEach(oobj => {
-            catagories = catagories + oobj + '/'
+        var categories = '';
+        obj['categories'].forEach(oobj => {
+            categories = categories + oobj + '/'
       })
-      catagories = catagories.substring(0, catagories.length - 1);
-      obj['catagories'] = catagories
+      categories = categories.substring(0, categories.length - 1);
+      obj['categories'] = categories
 
     });
     restaurant_info.info.forEach((e,index)=> {
@@ -139,6 +118,9 @@ class Dashboard extends React.Component {
       e.Average_service_score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_service_score;
       e.Date = restaurant_info.latest_week_score[index].Date_and_Scores[0].Date.split('T')[0];
       e.Post_count = restaurant_info.latest_week_score[index].Date_and_Scores[0].Post_count;
+      e.Last_Week_Avg_Score = restaurant_info.latest_week_score[index].Date_and_Scores[0].Average_score;
+      e.This_Week_Avg_Score = restaurant_info.latest_week_score[index].Date_and_Scores[1].Average_score;
+
     })
 
 
@@ -154,7 +136,7 @@ class Dashboard extends React.Component {
 
     
 
-    console.log(this.state.restaurant_info)
+    console.log(this.state.filtered_info)
 
 
   }
@@ -191,49 +173,6 @@ class Dashboard extends React.Component {
               <CCardHeader>
                 <h2>Restaurants</h2>
                 
-              {/* <CDropdown className="m-1 d-inline-block" style={{float: 'right'}}>
-              <CDropdownToggle color="secondary">
-                Cuisine
-              </CDropdownToggle>
-              <CDropdownMenu
-                placement="bottom"
-                modifiers={[{name: 'flip', enabled: false }]}
-              >
-                <CDropdownItem header>Choose one cusine </CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(hk_list)}>Hong Kong Style</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(chinese_list)}>Chinese</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(cantonese_list)}>Cantonese</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(taiwan_list)}>Taiwnaese</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(japan_list)}>Japanese</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(korea_list)}>Korean</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(thai_list)}>Thai</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(asian_list)}>Asian</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(italy_list)}>Italian</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(french_list)}>French</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(western_list)}>Western</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(midEast_list)}>Middile Eastern</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(latinAmerican_list)}>Latin American</CDropdownItem>
-                <CDropdownItem onClick={() =>this.handleClick(international_list)}>International</CDropdownItem>
-              </CDropdownMenu>
-              </CDropdown> */}
-
-
-              {/* <CDropdown className="m-1 d-inline-block" style={{float: 'right'}}>
-              <CDropdownToggle color="secondary">
-               District
-              </CDropdownToggle>
-              <CDropdownMenu
-                placement="bottom"
-                modifiers={[{name: 'flip', enabled: false }]}
-              >
-                <CDropdownItem header>Hong Kong Island</CDropdownItem>
-                <CDropdownItem disabled>Kowloon</CDropdownItem>
-                <CDropdownItem>New Territories</CDropdownItem>
-                <CDropdownItem>Out Island</CDropdownItem>
-              </CDropdownMenu>
-              </CDropdown> */}
-
-                {/* <button>a</button> */}
             </CCardHeader>
               <CCardBody>
                 <CDataTable
