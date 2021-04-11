@@ -231,6 +231,7 @@ class Dashboard extends React.Component {
                 <CDataTable
                   items={this.state.filtered_info}
                   fields={fields}
+                  sorter
                   hover
                   striped
                   bordered
