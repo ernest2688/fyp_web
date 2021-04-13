@@ -36,7 +36,7 @@ const getBadge = status => {
 }
 
 //const fields = ['name','district','categories','Last_Week_Avg_Score', 'This_Week_Avg_Score','prediction','most_common_hashtag','total_num_of_posts',
-const fields = ['name', 'district', 'categories', 'This_Week_Avg_Score', 'one_Week_change', 'prediction', 'Average_env_score', 'Average_food_score', 'Average_service_score', 'most_common_hashtag', 'total_num_of_posts',
+const fields = ['name', 'district', 'categories', 'This_Week_Avg_Score', 'one_weeks_range','three_weeks_range','three_months_range', 'prediction', 'Average_env_score', 'Average_food_score', 'Average_service_score', 'most_common_hashtag', 'total_num_of_posts',
   {
     key: 'show_details',
     label: '',
@@ -93,7 +93,7 @@ class Dashboard extends React.Component {
 
     });
 
-    var undefined_rest = []
+    console.log(restaurant_info)
     restaurant_info.info.forEach(function (e, i, o) {
       let nid_tag = e.nid.split('(')[0];
       nid_tag = nid_tag.trim();
@@ -114,16 +114,38 @@ class Dashboard extends React.Component {
         if (k.Openrice_Restaurant_Name.toString().split('(')[0].trim() === nid_tag) {
           //          e.Last_Week_Avg_Score = k.Date_and_Scores[0].Average_score;
           e.This_Week_Avg_Score = k.Date_and_Scores[1].Average_score.toFixed(3);
-          e.one_Week_change = (k.Date_and_Scores[1].Average_score - k.Date_and_Scores[0].Average_score).toFixed(3);
+//          e.one_Week_change = (k.Date_and_Scores[1].Average_score - k.Date_and_Scores[0].Average_score).toFixed(3);
+          e.one_Week_change=Math.round((k.Date_and_Scores[1].Average_score - k.Date_and_Scores[0].Average_score)* 100) / 100 
           e.Average_Eng_and_emoji_score = k.Date_and_Scores[1].Average_Eng_and_emoji_score.toFixed(3);
           e.Average_env_score = k.Date_and_Scores[1].Average_env_score.toFixed(3);
           e.Average_food_score = k.Date_and_Scores[1].Average_food_score.toFixed(3);
           e.Average_score = k.Date_and_Scores[1].Average_score.toFixed(3);
           e.Average_service_score = k.Date_and_Scores[1].Average_service_score.toFixed(3);
           e.Date = k.Date_and_Scores[1].Date.split('T')[0];
+
+          if (k.one_week_high < 0.001){
+            e.one_weeks_range = "no record"
+          }
+          else {
+            e.one_weeks_range = k.one_week_low.toFixed(3) + "-" + k.one_week_high.toFixed(3) 
+          }
+          if (k.three_week_high < 0.001){
+            e.three_weeks_range = "no record"
+          }
+          else {
+            e.three_weeks_range = k.three_week_low.toFixed(3) + "-" + k.three_week_high.toFixed(3) 
+          }
+          if (k.three_month_high < 0.001){
+            e.three_months_range = "no record"
+          }
+          else {
+            e.three_months_range = k.three_month_low.toFixed(3) + "-" + k.three_month_high.toFixed(3) 
+          }
+         
           return
         }
       })
+
       restaurant_info.prediction.forEach(k => {
         if (k.Openrice_Restaurant_Name.toString().split('(')[0].trim() === nid_tag) {
           if (k.Average_score == true) {
