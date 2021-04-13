@@ -233,9 +233,10 @@ class Dashboard extends React.Component {
                               variant="outline"
                               shape="square"
                               size="sm"
-                              onClick={() => { this.toggleDetails(index) }}
+                              //onClick={() => { this.toggleDetails(index) }}
                             >
-                              {this.state.details.includes(index) ? 'Hide' : 'Show'}
+                              {/* {this.state.details.includes(index) ? 'Hide' : 'Show'} */}
+                              <Link to={`/restaurant/${item.nid}`}><strong>Show Details</strong></Link>
                             </CButton>
                           </td>
                         )
